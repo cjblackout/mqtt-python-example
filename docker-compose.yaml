@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  app:
+    build:
+      context: .
+    container_name: app
+    depends_on:
+      - mosquitto
+    restart: unless-stopped
+    networks:
+      - mqtt_network
+    expose:
+      - 21883
+      - 21884
+    ports:
+      - 21883:21883
+      - 21884:21884
+
+  mosquitto:
+    image: eclipse-mosquitto:2.0-openssl
+    container_name: mosquitto
+    expose:
+      - 1883
+      - 1884
+      - 8883
+      - 9001
+    ports:
+      - 1883:1883
+      - 1884:1884
+      - 8883:8883
+      - 9001:9001
+    networks:
+      - mqtt_network
+    volumes:
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+
+networks:
+  mqtt_network:
+    driver: bridge
